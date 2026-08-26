@@ -1,0 +1,359 @@
+/*
+ * The gift world.
+ *
+ * Everything a recipient sees is styled here rather than with the studio's
+ * Tailwind tokens: the two worlds share a repo but not a palette, and keeping
+ * the gift's colours, papers and animations in one file is what lets it be
+ * matched against the reference recordings rather than drifting.
+ */
+
+.gift-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  font-family: 'Heebo', system-ui, sans-serif;
+  color: #fff4ee;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+.gift-hand {
+  font-family: 'Gveret Levin', 'Heebo', cursive;
+}
+.gift-display {
+  font-family: 'Suez One', 'Heebo', system-ui, sans-serif;
+}
+
+/* the layer every scene is painted into; scenes cross-fade against each other */
+.gift-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: max(28px, env(safe-area-inset-top)) 20px
+    max(28px, env(safe-area-inset-bottom));
+  text-align: center;
+}
+
+.gift-fade-in {
+  animation: gift-fade-in 520ms cubic-bezier(0.22, 0.9, 0.28, 1) both;
+}
+.gift-fade-out {
+  animation: gift-fade-out 460ms ease-in both;
+  pointer-events: none;
+}
+
+@keyframes gift-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes gift-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* ---------------------------------------------------------------- skins -- */
+
+.skin {
+  position: absolute;
+  inset: 0;
+  transition: opacity 900ms ease;
+}
+
+.skin-paper {
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 33px,
+      rgba(120, 140, 170, 0.2) 33px 34px
+    ),
+    radial-gradient(120% 70% at 50% 50%, transparent 55%, rgba(120, 96, 60, 0.09)),
+    #fef4e9;
+}
+
+.skin-red {
+  background: linear-gradient(180deg, #a81119 0%, #c0242b 38%, #d2565d 72%, #dd7a80 100%);
+}
+
+.skin-night {
+  background: linear-gradient(180deg, #332845 0%, #241b32 45%, #1b1427 100%);
+}
+
+/* ------------------------------------------------------------- ambience -- */
+
+.spark {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: twinkle var(--dur, 3.4s) ease-in-out var(--delay, 0s) infinite;
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.15);
+  }
+}
+
+.drifting-heart {
+  position: absolute;
+  bottom: -14vh;
+  color: #fff;
+  animation: drift var(--dur, 11s) linear var(--delay, 0s) infinite;
+  will-change: transform;
+}
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: var(--peak, 0.18);
+  }
+  88% {
+    opacity: var(--peak, 0.18);
+  }
+  100% {
+    transform: translate3d(var(--sway, 24px), -125vh, 0) rotate(var(--spin, 22deg));
+    opacity: 0;
+  }
+}
+
+/* the emoji that rise on a celebration — heavier and shorter-lived than the
+   ambient hearts, so the two never read as the same effect */
+.rising-emoji {
+  position: absolute;
+  bottom: -10vh;
+  animation: rise var(--dur, 6s) cubic-bezier(0.3, 0.5, 0.5, 1) var(--delay, 0s) forwards;
+  will-change: transform;
+}
+@keyframes rise {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(var(--scale, 1));
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--sway, 30px), -118vh, 0) rotate(var(--spin, 30deg))
+      scale(var(--scale, 1));
+    opacity: 0;
+  }
+}
+
+.confetti-bit {
+  position: absolute;
+  top: -8vh;
+  border-radius: 1px;
+  animation: confetti-fall var(--dur, 2.2s) cubic-bezier(0.35, 0.4, 0.6, 1)
+    var(--delay, 0s) forwards;
+  will-change: transform;
+}
+@keyframes confetti-fall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--sway, 40px), 118vh, 0) rotate(var(--spin, 540deg));
+    opacity: 0.9;
+  }
+}
+
+.moon {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #fbf0c8, #f0d28e 62%, #e5be72);
+}
+@keyframes moon-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+.moon-crater {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(214, 176, 106, 0.55);
+}
+
+/* -------------------------------------------------------------- papers -- */
+
+.note-card {
+  position: relative;
+  width: min(560px, 100%);
+  background: #fff4ee;
+  border-radius: 18px;
+  padding: 34px 26px 30px;
+  box-shadow: 0 22px 50px -18px rgba(60, 0, 6, 0.55);
+  color: #241b32;
+  /* the ruled lines are part of the paper, and their pitch is the line-height
+     the handwriting is set on — text has to sit on the rules, not near them */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 43px,
+    rgba(180, 150, 140, 0.28) 43px 44px
+  );
+  background-position: 0 34px;
+}
+
+.washi-tape {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  width: 96px;
+  height: 26px;
+  transform: translateX(-50%) rotate(-1.5deg);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 222, 156, 0.94),
+    rgba(246, 205, 128, 0.94)
+  );
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(60, 0, 6, 0.18);
+}
+.washi-tape::before,
+.washi-tape::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: rgba(0, 0, 0, 0.06);
+}
+.washi-tape::before {
+  left: 0;
+}
+.washi-tape::after {
+  right: 0;
+}
+
+.polaroid {
+  position: relative;
+  background: #fffdfb;
+  padding: 14px 14px 52px;
+  border-radius: 3px;
+  box-shadow: 0 18px 40px -14px rgba(60, 0, 6, 0.6);
+}
+.polaroid-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  text-align: center;
+  color: #3b3540;
+  font-size: 17px;
+}
+
+/* --------------------------------------------------------------- parts -- */
+
+.gift-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff4ee;
+  color: #241b32;
+  border: none;
+  border-radius: 999px;
+  padding: 11px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 22px -10px rgba(20, 0, 6, 0.6);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+.gift-pill:active {
+  transform: scale(0.96);
+}
+
+.gift-stat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff4ee;
+  color: #241b32;
+  border-radius: 999px;
+  padding: 6px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 8px 18px -10px rgba(20, 0, 6, 0.55);
+}
+
+.gift-hint {
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  opacity: 0.86;
+}
+
+/* the caret that follows the letter as it writes itself */
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  vertical-align: -0.12em;
+  background: currentColor;
+  margin-inline-start: 2px;
+  animation: caret-blink 1s steps(1) infinite;
+}
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* one line of an invitation, arriving on its own beat */
+.line-in {
+  animation: line-in 700ms cubic-bezier(0.2, 0.85, 0.3, 1) both;
+}
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pop-in {
+  animation: pop-in 520ms cubic-bezier(0.22, 1.2, 0.4, 1) both;
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

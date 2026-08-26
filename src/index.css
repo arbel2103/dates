@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* The studio's own room: warm paper, white panels, one rose action colour.
+     Deliberately quieter than the gift sites — this is the workshop, not the
+     thing being made. Light only, so every token is defined once. */
+  --bg: 253 247 242;
+  --surface: 255 255 255;
+  --ink: 36 27 50;
+  --muted: 138 122 128;
+  --line: 238 227 220;
+  --accent: 185 42 73;
+  --accent-soft: 250 232 234;
+  --gold: 214 165 76;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: theme('fontFamily.sans');
+  color: rgb(var(--ink));
+  background:
+    radial-gradient(900px 520px at 88% -8%, rgba(185, 42, 73, 0.07), transparent 62%),
+    radial-gradient(760px 560px at 4% 6%, rgba(214, 165, 76, 0.09), transparent 60%),
+    rgb(var(--bg));
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* the horizontal page scroller must not show its rail */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* frosted header/tab bar, so content scrolling under them stays legible */
+.chrome {
+  background: rgba(253, 247, 242, 0.86);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-color: rgb(var(--line));
+}
+
+.card {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--line));
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(36, 27, 50, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

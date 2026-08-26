@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="דייטים">
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A20E18"/>
+      <stop offset="0.5" stop-color="#BE2129"/>
+      <stop offset="1" stop-color="#DC666C"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx="0.24" cy="0.14" r="0.8">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="heart" x1="0.15" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#FFFDFA"/>
+      <stop offset="1" stop-color="#FFE0D2"/>
+    </linearGradient>
+    <path id="h" d="M256 430C256 430 78 330 78 216 C78 152 128 102 190 102 C226 102 250 122 256 144 C262 122 286 102 322 102 C384 102 434 152 434 216 C434 330 256 430 256 430Z"/>
+  </defs>
+
+  <rect width="512" height="512" rx="114" fill="url(#ground)"/>
+  <rect width="512" height="512" rx="114" fill="url(#sheen)"/>
+
+  <!-- two hearts, one behind the other: the app is for two people -->
+  <g transform="translate(256 268) scale(0.68) translate(-256 -266)">
+    <use href="#h" transform="rotate(-11 256 266) translate(-46 -26)"
+         fill="none" stroke="#FFDE9C" stroke-opacity="0.8" stroke-width="11" stroke-linejoin="round"/>
+    <use href="#h" fill="#8E0C15" fill-opacity="0.22" transform="translate(9 13)"/>
+    <use href="#h" fill="url(#heart)"/>
+  </g>
+
+  <!-- sparkles, kept clear of the hearts -->
+  <path d="M404 128 L412 156 L440 164 L412 172 L404 200 L396 172 L368 164 L396 156 Z" fill="#FFDE9C"/>
+  <path d="M106 372 L111 389 L128 394 L111 399 L106 416 L101 399 L84 394 L101 389 Z" fill="#FFDE9C" fill-opacity="0.85"/>
+  <circle cx="392" cy="378" r="9" fill="#FFDE9C" fill-opacity="0.62"/>
+  <circle cx="120" cy="130" r="6" fill="#FFDE9C" fill-opacity="0.5"/>
+</svg>
