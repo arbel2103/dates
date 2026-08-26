@@ -19,7 +19,7 @@ const FADE_MS = 480
  * up over the old one — that dissolve from the red room into the night sky is
  * the transition itself, not a cut between two pages.
  */
-export default function SceneStage({ scenes }: { scenes: Scene[] }) {
+export default function SceneStage({ scenes, onDone }: { scenes: Scene[]; onDone?: () => void }) {
   const [index, setIndex] = useState(0)
   const [leaving, setLeaving] = useState(false)
   const scene = scenes[Math.min(index, scenes.length - 1)]
@@ -34,7 +34,11 @@ export default function SceneStage({ scenes }: { scenes: Scene[] }) {
   }, [scenes])
 
   const advance = () => {
-    if (leaving || index >= scenes.length - 1) return
+    if (leaving) return
+    if (index >= scenes.length - 1) {
+      onDone?.()
+      return
+    }
     setLeaving(true)
     window.setTimeout(() => {
       setIndex((n) => n + 1)

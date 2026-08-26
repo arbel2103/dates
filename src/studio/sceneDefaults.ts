@@ -63,7 +63,7 @@ export function blankScene(type: SceneType, partner: string): Scene {
           { emoji: '📍', text: 'הפתעה' },
           { emoji: '🎁', text: 'את עצמך' },
         ],
-        ctaLabel: 'תגידי לי את זה בעצמך',
+        ctaLabel: '',
         ctaHref: '',
       }
   }

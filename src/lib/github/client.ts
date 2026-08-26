@@ -102,21 +102,31 @@ async function commitTree(
   message: string,
   tree: object[],
 ): Promise<void> {
-  const base = await call<{ tree: { sha: string } }>(
-    `/repos/${getRepo()}/git/commits/${parent}`,
-  )
-  const newTree = await call<{ sha: string }>(`/repos/${getRepo()}/git/trees`, {
-    method: 'POST',
-    body: JSON.stringify({ base_tree: base.tree.sha, tree }),
-  })
-  const commit = await call<{ sha: string }>(`/repos/${getRepo()}/git/commits`, {
-    method: 'POST',
-    body: JSON.stringify({ message, tree: newTree.sha, parents: [parent] }),
-  })
-  await call(`/repos/${getRepo()}/git/refs/heads/${GIFT_BRANCH}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ sha: commit.sha }),
-  })
+  const repo = getRepo()
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const tip = attempt === 0 ? parent : (await getRef(GIFT_BRANCH)) ?? parent
+    try {
+      const base = await call<{ tree: { sha: string } }>(
+        `/repos/${repo}/git/commits/${tip}`,
+      )
+      const newTree = await call<{ sha: string }>(`/repos/${repo}/git/trees`, {
+        method: 'POST',
+        body: JSON.stringify({ base_tree: base.tree.sha, tree }),
+      })
+      const commit = await call<{ sha: string }>(`/repos/${repo}/git/commits`, {
+        method: 'POST',
+        body: JSON.stringify({ message, tree: newTree.sha, parents: [tip] }),
+      })
+      await call(`/repos/${repo}/git/refs/heads/${GIFT_BRANCH}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ sha: commit.sha, force: true }),
+      })
+      return
+    } catch (err) {
+      if (attempt >= 2) throw err
+      await new Promise((r) => setTimeout(r, 500 * (attempt + 1)))
+    }
+  }
 }
 
 /** Upload one encrypted gift. Returns the path it landed on. */
@@ -137,9 +147,24 @@ export async function uploadGift(id: string, blob: Bytes): Promise<string> {
 export async function deleteGift(path: string): Promise<void> {
   const parent = await getRef(GIFT_BRANCH)
   if (!parent) return
-  await commitTree(parent, `הסרת ${path}`, [
-    { path, mode: '100644', type: 'blob', sha: null },
-  ])
+  const repo = getRepo()
+  const base = await call<{ tree: { sha: string } }>(`/repos/${repo}/git/commits/${parent}`)
+  const oldTree = await call<{ tree: { path: string; mode: string; type: string; sha: string }[] }>(
+    `/repos/${repo}/git/trees/${base.tree.sha}`,
+  )
+  const entries = oldTree.tree.filter((e) => e.path !== path)
+  const newTree = await call<{ sha: string }>(`/repos/${repo}/git/trees`, {
+    method: 'POST',
+    body: JSON.stringify({ tree: entries.map((e) => ({ path: e.path, mode: e.mode, type: e.type, sha: e.sha })) }),
+  })
+  const commit = await call<{ sha: string }>(`/repos/${repo}/git/commits`, {
+    method: 'POST',
+    body: JSON.stringify({ message: `הסרת ${path}`, tree: newTree.sha, parents: [parent] }),
+  })
+  await call(`/repos/${repo}/git/refs/heads/${GIFT_BRANCH}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ sha: commit.sha }),
+  })
 }
 
 /**

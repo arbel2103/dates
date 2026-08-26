@@ -193,25 +193,6 @@ function Accepted({ scene }: { scene: Scene }) {
         ))}
       </div>
 
-      {scene.ctaLabel && (
-        <a
-          className="gift-pill gift-fade-in"
-          href={scene.ctaHref || undefined}
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            marginTop: 28,
-            background: '#1DC551',
-            color: '#fff',
-            textDecoration: 'none',
-            padding: '15px 30px',
-            fontSize: 16,
-            animationDelay: `${700 + scene.details.length * 250}ms`,
-          }}
-        >
-          {scene.ctaLabel} ←
-        </a>
-      )}
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback } from 'react'
-import { HashRouter, Route, Routes, useSearchParams } from 'react-router-dom'
+import { HashRouter, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
 import { HostedGiftPage, InlineGiftPage } from './gift/GiftPage'
 import SceneStage from './gift/SceneStage'
 import { useGifts } from './store/useGifts'
@@ -39,7 +39,10 @@ export default function App() {
 /** The studio's own window onto a draft, rendered from the local store. */
 function PreviewPage() {
   const [params] = useSearchParams()
+  const navigate = useNavigate()
   const gift = useGifts(useCallback((s) => s.byId(params.get('gift') ?? ''), [params]))
+
+  const close = () => navigate('/')
 
   if (!gift || gift.scenes.length === 0) {
     return (
@@ -53,7 +56,34 @@ function PreviewPage() {
       </div>
     )
   }
-  return <SceneStage scenes={gift.scenes} />
+  return (
+    <>
+      <SceneStage scenes={gift.scenes} onDone={close} />
+      <button
+        onClick={close}
+        aria-label="סגור תצוגה מקדימה"
+        style={{
+          position: 'fixed',
+          top: 14,
+          left: 14,
+          zIndex: 9999,
+          width: 36,
+          height: 36,
+          borderRadius: '50%',
+          background: 'rgba(0,0,0,.45)',
+          color: '#fff',
+          border: 'none',
+          fontSize: 18,
+          cursor: 'pointer',
+          display: 'grid',
+          placeItems: 'center',
+          backdropFilter: 'blur(6px)',
+        }}
+      >
+        ✕
+      </button>
+    </>
+  )
 }
 
 function Loading() {
