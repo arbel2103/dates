@@ -60,31 +60,27 @@ export default function IdeasPage() {
       {shown.length === 0 ? (
         <Empty>אין רעיונות שמתאימים. נסה חיפוש אחר, או הוסף רעיון חדש.</Empty>
       ) : (
-        <ul className="grid gap-1">
+        <ul className="grid gap-px">
           {shown.map((idea) => (
             <li key={idea.id}>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface border border-line">
-                <span className="text-base shrink-0" aria-hidden>
-                  {idea.emoji}
-                </span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-surface border-b border-line">
                 <button
-                  className="flex-1 min-w-0 text-start"
+                  className="flex-1 min-w-0 text-start truncate text-[13px] font-medium"
                   onClick={() => setEditing(idea)}
                 >
-                  <span className="text-sm font-semibold truncate">{idea.title}</span>
-                  <span className="text-[11px] text-muted mr-1.5">{idea.category}</span>
+                  {idea.title}
                 </button>
+                <span className="text-[10px] text-muted shrink-0">{idea.category}</span>
                 <button
                   onClick={() => toggleFavorite(idea.id)}
-                  className="shrink-0 w-7 h-7 grid place-items-center rounded-lg text-sm hover:bg-ink/5 transition"
+                  className="shrink-0 w-6 h-6 grid place-items-center rounded text-xs hover:bg-ink/5 transition"
                   aria-label={idea.favorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
-                  title="מועדף"
                 >
-                  {idea.favorite ? '⭐' : '☆'}
+                  {idea.favorite ? '★' : '☆'}
                 </button>
                 <button
                   onClick={() => removeIdea(idea.id)}
-                  className="shrink-0 w-7 h-7 grid place-items-center rounded-lg text-sm text-muted hover:text-red-600 hover:bg-red-50 transition"
+                  className="shrink-0 w-6 h-6 grid place-items-center rounded text-xs text-muted hover:text-red-600 transition"
                   aria-label={`מחק ${idea.title}`}
                 >
                   ✕
@@ -120,8 +116,6 @@ function Chip({
     </button>
   )
 }
-
-const EMOJI_CHOICES = ['💡', '🌊', '🍝', '🎬', '🥾', '🎭', '☕', '🌙', '🎲', '🚗', '💃', '🍦', '⭐', '🧩', '📷', '🎁']
 
 function IdeaEditor({
   idea,
@@ -163,10 +157,9 @@ function EditorBody({
 }: {
   existing: Idea | null
   categories: string[]
-  onSubmit: (draft: Pick<Idea, 'title' | 'emoji' | 'category' | 'notes'>) => void
+  onSubmit: (draft: Pick<Idea, 'title' | 'category' | 'notes'>) => void
 }) {
   const [title, setTitle] = useState(existing?.title ?? '')
-  const [emoji, setEmoji] = useState(existing?.emoji ?? '💡')
   const [category, setCategory] = useState(existing?.category ?? 'כללי')
   const [notes, setNotes] = useState(existing?.notes ?? '')
 
@@ -178,28 +171,11 @@ function EditorBody({
       onSubmit={(e) => {
         e.preventDefault()
         if (!title.trim()) return
-        onSubmit({ title, emoji, category, notes: notes.trim() || undefined })
+        onSubmit({ title, category, notes: notes.trim() || undefined })
       }}
     >
       <Field label="הרעיון">
         <Input value={title} onChange={(e) => setTitle(e.target.value)} autoFocus placeholder="דייט ים בשקיעה" />
-      </Field>
-
-      <Field label="אימוג׳י" hint="זה מה שיופיע על החלק בגלגל">
-        <div className="flex flex-wrap gap-1.5">
-          {[...new Set([emoji, ...EMOJI_CHOICES])].map((e) => (
-            <button
-              key={e}
-              type="button"
-              onClick={() => setEmoji(e)}
-              className={`w-10 h-10 rounded-xl text-xl grid place-items-center transition ${
-                e === emoji ? 'bg-accent-soft ring-2 ring-accent' : 'hover:bg-ink/5'
-              }`}
-            >
-              {e}
-            </button>
-          ))}
-        </div>
       </Field>
 
       <Field label="קטגוריה">

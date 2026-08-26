@@ -6,7 +6,7 @@ import type { Idea } from '../lib/types'
 
 interface State {
   ideas: Idea[]
-  addIdea: (idea: Pick<Idea, 'title' | 'emoji' | 'category'> & Partial<Idea>) => string
+  addIdea: (idea: Pick<Idea, 'title' | 'category'> & Partial<Idea>) => string
   updateIdea: (id: string, patch: Partial<Omit<Idea, 'id'>>) => void
   removeIdea: (id: string) => void
   toggleFavorite: (id: string) => void

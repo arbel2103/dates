@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Button, Field, Input, Textarea } from '../ui/Ui'
 import { wheelOption } from '../sceneDefaults'
 import { dataUrlBytes, shrinkImage, squareImage } from '../../lib/images'
-import { useIdeas } from '../../store/useIdeas'
+import { categoriesOf, useIdeas } from '../../store/useIdeas'
 import type {
   EnvelopeScene,
   GalleryScene,
@@ -186,7 +186,13 @@ function GalleryEditor({ scene, onChange }: EditorProps<GalleryScene>) {
 
 function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
   const ideas = useIdeas((s) => s.ideas)
+  const categories = useMemo(() => categoriesOf(ideas), [ideas])
   const [picking, setPicking] = useState(false)
+  const [openCats, setOpenCats] = useState<Record<string, boolean>>({})
+  const flipCat = (cat: string) => setOpenCats((o) => ({ ...o, [cat]: !o[cat] }))
+
+  const addIdea = (idea: { id: string; title: string; emoji: string }) =>
+    onChange({ options: [...scene.options, { id: idea.id, label: idea.title, emoji: idea.emoji }] })
 
   return (
     <div className="grid gap-4">
@@ -201,17 +207,6 @@ function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
         <div className="grid gap-1.5">
           {scene.options.map((option, i) => (
             <div key={option.id} className="flex gap-2">
-              <Input
-                className="w-16 text-center"
-                value={option.emoji}
-                onChange={(e) =>
-                  onChange({
-                    options: scene.options.map((o, j) =>
-                      j === i ? { ...o, emoji: e.target.value } : o,
-                    ),
-                  })
-                }
-              />
               <Input
                 value={option.label}
                 onChange={(e) =>
@@ -248,20 +243,32 @@ function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
       </div>
 
       {picking && (
-        <div className="max-h-56 overflow-y-auto grid gap-1 border border-line rounded-xl p-2">
-          {ideas.map((idea) => (
-            <button
-              key={idea.id}
-              className="text-start text-sm px-2 py-1.5 rounded-lg hover:bg-bg"
-              onClick={() =>
-                onChange({
-                  options: [...scene.options, { id: idea.id, label: idea.title, emoji: idea.emoji }],
-                })
-              }
-            >
-              {idea.emoji} {idea.title}
-            </button>
-          ))}
+        <div className="max-h-64 overflow-y-auto grid gap-1 border border-line rounded-xl p-2">
+          {categories.map((cat) => {
+            const items = ideas.filter((i) => i.category === cat)
+            const expanded = openCats[cat] ?? false
+            return (
+              <div key={cat}>
+                <button
+                  onClick={() => flipCat(cat)}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 text-start hover:bg-ink/5 rounded-lg transition"
+                >
+                  <span className={`text-xs transition-transform ${expanded ? 'rotate-90' : ''}`}>▶</span>
+                  <span className="flex-1 font-semibold text-sm">{cat}</span>
+                  <span className="text-[11px] text-muted">{items.length}</span>
+                </button>
+                {expanded && items.map((idea) => (
+                  <button
+                    key={idea.id}
+                    className="w-full text-start text-sm px-6 py-1.5 rounded-lg hover:bg-bg"
+                    onClick={() => addIdea(idea)}
+                  >
+                    {idea.title}
+                  </button>
+                ))}
+              </div>
+            )
+          })}
         </div>
       )}
 
@@ -285,7 +292,7 @@ function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
           <option value="">הגרלה אמיתית</option>
           {scene.options.map((o) => (
             <option key={o.id} value={o.id}>
-              {o.emoji} {o.label}
+              {o.label}
             </option>
           ))}
         </select>
@@ -376,19 +383,6 @@ function InviteEditor({ scene, onChange }: EditorProps<InviteScene>) {
       >
         + שורה
       </Button>
-
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="הכפתור הירוק">
-          <Input value={scene.ctaLabel} onChange={(e) => onChange({ ctaLabel: e.target.value })} />
-        </Field>
-        <Field label="לאן הוא מוביל" hint="למשל https://wa.me/9725…">
-          <Input
-            dir="ltr"
-            value={scene.ctaHref}
-            onChange={(e) => onChange({ ctaHref: e.target.value })}
-          />
-        </Field>
-      </div>
     </div>
   )
 }
