@@ -55,10 +55,7 @@ export default function SettingsPage() {
           <Input dir="ltr" value={repo} onChange={(e) => setRepoValue(e.target.value)} />
         </Field>
 
-        <Field
-          label="טוקן GitHub"
-          hint="Fine-grained token עם הרשאת Contents: read & write על הריפו הזה בלבד"
-        >
+        <Field label="טוקן GitHub (PAT)">
           <Input
             dir="ltr"
             type="password"
@@ -67,6 +64,21 @@ export default function SettingsPage() {
             onChange={(e) => setToken(e.target.value)}
             placeholder="github_pat_…"
           />
+          <details className="mt-2 text-xs text-muted">
+            <summary className="cursor-pointer font-semibold hover:text-ink transition">
+              איך מייצרים טוקן? ←
+            </summary>
+            <ol className="mt-2 mr-4 list-decimal grid gap-1.5 leading-relaxed" dir="rtl">
+              <li>היכנס ל-GitHub → לחץ על התמונה שלך למעלה → <strong>Settings</strong></li>
+              <li>בתפריט הצד גלול למטה ל-<strong>Developer settings</strong></li>
+              <li>בחר <strong>Personal access tokens</strong> → <strong>Fine-grained tokens</strong> → <strong>Generate new token</strong></li>
+              <li>שם: מה שנוח (למשל "dates app"), תוקף: מומלץ 90 יום</li>
+              <li>תחת <strong>Repository access</strong> בחר <strong>Only select repositories</strong> → בחר את <code>dates</code></li>
+              <li>תחת <strong>Permissions</strong> → <strong>Repository permissions</strong> → <strong>Contents</strong> → בחר <strong>Read and write</strong></li>
+              <li>לחץ <strong>Generate token</strong> והעתק אותו לכאן</li>
+            </ol>
+            <p className="mt-2">הטוקן מתחיל ב-<code dir="ltr">github_pat_</code> ונשמר רק בדפדפן הזה.</p>
+          </details>
         </Field>
 
         <Button onClick={save} disabled={check.state === 'busy'}>
@@ -79,7 +91,7 @@ export default function SettingsPage() {
         {check.state === 'bad' && <p className="text-sm text-red-600">{check.message}</p>}
 
         <p className="text-xs text-muted">
-          הטוקן נשמר רק בדפדפן הזה ולא נכנס לשום דבר שמתפרסם.
+          הטוקן נשמר רק בדפדפן הזה ולא נכנס לשום דבר שמתפרסם. צריך טוקן רק אם רוצים לשלוח מתנות עם תמונות — גלגלים, מכתבים והזמנות עובדים בלי.
         </p>
       </Card>
     </div>

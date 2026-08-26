@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Button, Card, Empty, Field, Input, Modal, PageHeader, Textarea } from '../ui/Ui'
+import { Button, Empty, Field, Input, Modal, PageHeader, Textarea } from '../ui/Ui'
 import { categoriesOf, useIdeas } from '../../store/useIdeas'
 import { SEED_CATEGORIES } from '../../seed/ideas'
 import type { Idea } from '../../lib/types'
@@ -60,26 +60,23 @@ export default function IdeasPage() {
       {shown.length === 0 ? (
         <Empty>אין רעיונות שמתאימים. נסה חיפוש אחר, או הוסף רעיון חדש.</Empty>
       ) : (
-        <ul className="grid gap-2">
+        <ul className="grid gap-1">
           {shown.map((idea) => (
             <li key={idea.id}>
-              <Card className="flex items-center gap-3">
-                <span className="text-2xl shrink-0" aria-hidden>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface border border-line">
+                <span className="text-base shrink-0" aria-hidden>
                   {idea.emoji}
                 </span>
                 <button
                   className="flex-1 min-w-0 text-start"
                   onClick={() => setEditing(idea)}
                 >
-                  <span className="block font-semibold truncate">{idea.title}</span>
-                  <span className="block text-xs text-muted truncate">
-                    {idea.category}
-                    {idea.notes ? ` · ${idea.notes}` : ''}
-                  </span>
+                  <span className="text-sm font-semibold truncate">{idea.title}</span>
+                  <span className="text-[11px] text-muted mr-1.5">{idea.category}</span>
                 </button>
                 <button
                   onClick={() => toggleFavorite(idea.id)}
-                  className="shrink-0 w-9 h-9 grid place-items-center rounded-xl hover:bg-ink/5 transition"
+                  className="shrink-0 w-7 h-7 grid place-items-center rounded-lg text-sm hover:bg-ink/5 transition"
                   aria-label={idea.favorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
                   title="מועדף"
                 >
@@ -87,12 +84,12 @@ export default function IdeasPage() {
                 </button>
                 <button
                   onClick={() => removeIdea(idea.id)}
-                  className="shrink-0 w-9 h-9 grid place-items-center rounded-xl text-muted hover:text-red-600 hover:bg-red-50 transition"
+                  className="shrink-0 w-7 h-7 grid place-items-center rounded-lg text-sm text-muted hover:text-red-600 hover:bg-red-50 transition"
                   aria-label={`מחק ${idea.title}`}
                 >
                   ✕
                 </button>
-              </Card>
+              </div>
             </li>
           ))}
         </ul>
