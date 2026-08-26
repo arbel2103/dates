@@ -97,36 +97,44 @@ async function ensureGiftBranch(): Promise<string> {
   return commit.sha
 }
 
-async function commitTree(
+interface TreeEntry {
+  path: string
+  mode: string
+  type: string
+  sha: string
+}
+
+async function commitFile(
   parent: string,
   message: string,
-  tree: object[],
+  filePath: string,
+  blobSha: string,
 ): Promise<void> {
   const repo = getRepo()
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const tip = attempt === 0 ? parent : (await getRef(GIFT_BRANCH)) ?? parent
-    try {
-      const base = await call<{ tree: { sha: string } }>(
-        `/repos/${repo}/git/commits/${tip}`,
-      )
-      const newTree = await call<{ sha: string }>(`/repos/${repo}/git/trees`, {
-        method: 'POST',
-        body: JSON.stringify({ base_tree: base.tree.sha, tree }),
-      })
-      const commit = await call<{ sha: string }>(`/repos/${repo}/git/commits`, {
-        method: 'POST',
-        body: JSON.stringify({ message, tree: newTree.sha, parents: [tip] }),
-      })
-      await call(`/repos/${repo}/git/refs/heads/${GIFT_BRANCH}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ sha: commit.sha, force: true }),
-      })
-      return
-    } catch (err) {
-      if (attempt >= 2) throw err
-      await new Promise((r) => setTimeout(r, 500 * (attempt + 1)))
-    }
-  }
+  const tip = (await getRef(GIFT_BRANCH)) ?? parent
+
+  const base = await call<{ tree: { sha: string } }>(`/repos/${repo}/git/commits/${tip}`)
+  const oldTree = await call<{ tree: TreeEntry[]; truncated?: boolean }>(
+    `/repos/${repo}/git/trees/${base.tree.sha}`,
+  )
+
+  const entries: TreeEntry[] = oldTree.tree
+    .filter((e: TreeEntry) => e.path !== filePath)
+    .map((e: TreeEntry) => ({ path: e.path, mode: e.mode, type: e.type, sha: e.sha }))
+  entries.push({ path: filePath, mode: '100644', type: 'blob', sha: blobSha })
+
+  const newTree = await call<{ sha: string }>(`/repos/${repo}/git/trees`, {
+    method: 'POST',
+    body: JSON.stringify({ tree: entries }),
+  })
+  const commit = await call<{ sha: string }>(`/repos/${repo}/git/commits`, {
+    method: 'POST',
+    body: JSON.stringify({ message, tree: newTree.sha, parents: [tip] }),
+  })
+  await call(`/repos/${repo}/git/refs/heads/${GIFT_BRANCH}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ sha: commit.sha, force: true }),
+  })
 }
 
 /** Upload one encrypted gift. Returns the path it landed on. */
@@ -137,9 +145,7 @@ export async function uploadGift(id: string, blob: Bytes): Promise<string> {
     body: JSON.stringify({ content: toBase64(blob), encoding: 'base64' }),
   })
   const path = `${id}.bin`
-  await commitTree(parent, `מתנה ${id}`, [
-    { path, mode: '100644', type: 'blob', sha: created.sha },
-  ])
+  await commitFile(parent, `מתנה ${id}`, path, created.sha)
   return path
 }
 
