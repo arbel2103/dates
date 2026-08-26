@@ -60,17 +60,17 @@ export default function IdeasPage() {
       {shown.length === 0 ? (
         <Empty>אין רעיונות שמתאימים. נסה חיפוש אחר, או הוסף רעיון חדש.</Empty>
       ) : (
-        <ul className="grid gap-px">
+        <ul className="grid gap-px overflow-hidden">
           {shown.map((idea) => (
             <li key={idea.id}>
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-surface border-b border-line">
+              <div className="flex items-center gap-1 px-2 py-1.5 bg-surface border-b border-line overflow-hidden max-w-full">
                 <button
                   className="flex-1 min-w-0 text-start truncate text-[13px] font-medium"
                   onClick={() => setEditing(idea)}
                 >
                   {idea.title}
                 </button>
-                <span className="text-[10px] text-muted shrink-0">{idea.category}</span>
+                <span className="text-[10px] text-muted shrink-0 max-w-16 truncate">{idea.category}</span>
                 <button
                   onClick={() => toggleFavorite(idea.id)}
                   className="shrink-0 w-6 h-6 grid place-items-center rounded text-xs hover:bg-ink/5 transition"

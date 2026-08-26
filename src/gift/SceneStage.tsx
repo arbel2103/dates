@@ -46,6 +46,8 @@ export default function SceneStage({ scenes, onDone }: { scenes: Scene[]; onDone
     }, FADE_MS)
   }
 
+  const isLast = index >= scenes.length - 1
+
   return (
     <div className="gift-root">
       {worlds.map((world) => (
@@ -55,6 +57,30 @@ export default function SceneStage({ scenes, onDone }: { scenes: Scene[]; onDone
       <div key={index} className={leaving ? 'gift-fade-out' : 'gift-fade-in'} style={{ position: 'absolute', inset: 0 }}>
         <SceneBody scene={scene} onDone={advance} />
       </div>
+
+      {isLast && onDone && (
+        <button
+          onClick={onDone}
+          style={{
+            position: 'fixed',
+            bottom: 28,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+            background: 'rgba(0,0,0,.5)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 24,
+            padding: '10px 28px',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+            backdropFilter: 'blur(6px)',
+          }}
+        >
+          חזור לסטודיו ✕
+        </button>
+      )}
     </div>
   )
 }
