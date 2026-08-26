@@ -4,9 +4,9 @@ import { Button, Card, Empty, Field, Input, PageHeader, Textarea } from '../ui/U
 import { blankScene } from '../sceneDefaults'
 import { sliceColor } from '../../lib/wheel'
 import { useGifts } from '../../store/useGifts'
-import { useIdeas } from '../../store/useIdeas'
+import { categoriesOf, useIdeas } from '../../store/useIdeas'
 import { useSettings } from '../../store/useSettings'
-import type { WheelScene } from '../../lib/types'
+import type { Idea, WheelScene } from '../../lib/types'
 
 const WHEEL_GIFT_TITLE = 'גלגל הדייטים'
 const MAX_SLICES = 8
@@ -103,34 +103,7 @@ export default function WheelPage() {
       {ideas.length === 0 ? (
         <Empty>אין רעיונות עדיין. תוסיף כמה בעמוד הרעיונות.</Empty>
       ) : (
-        <ul className="grid gap-1.5 mb-5">
-          {ideas.map((idea) => {
-            const active = chosen.includes(idea.id)
-            const full = !active && chosen.length >= MAX_SLICES
-            return (
-              <li key={idea.id}>
-                <button
-                  onClick={() => toggle(idea.id)}
-                  disabled={full}
-                  className={`w-full flex items-center gap-3 p-3 rounded-2xl border text-start transition disabled:opacity-40 ${
-                    active ? 'border-accent bg-accent-soft' : 'border-line bg-surface hover:bg-bg'
-                  }`}
-                >
-                  <span className="text-xl" aria-hidden>
-                    {idea.emoji}
-                  </span>
-                  <span className="flex-1 min-w-0 truncate text-sm font-semibold">
-                    {idea.title}
-                  </span>
-                  <span className="text-xs text-muted shrink-0">{idea.category}</span>
-                  <span className="shrink-0" aria-hidden>
-                    {active ? '✓' : ''}
-                  </span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+        <CategoryAccordion ideas={ideas} chosen={chosen} toggle={toggle} />
       )}
 
       <Card className="grid gap-4 mb-4">
@@ -178,6 +151,75 @@ export default function WheelPage() {
           setPublishId(null)
         }}
       />
+    </div>
+  )
+}
+
+function CategoryAccordion({
+  ideas,
+  chosen,
+  toggle,
+}: {
+  ideas: Idea[]
+  chosen: string[]
+  toggle: (id: string) => void
+}) {
+  const categories = useMemo(() => categoriesOf(ideas), [ideas])
+  const [open, setOpen] = useState<Record<string, boolean>>({})
+
+  const flip = (cat: string) => setOpen((o) => ({ ...o, [cat]: !o[cat] }))
+
+  return (
+    <div className="grid gap-1.5 mb-5">
+      {categories.map((cat) => {
+        const items = ideas.filter((i) => i.category === cat)
+        const expanded = open[cat] ?? false
+        const chosenCount = items.filter((i) => chosen.includes(i.id)).length
+        return (
+          <div key={cat} className="rounded-xl border border-line bg-surface overflow-hidden">
+            <button
+              onClick={() => flip(cat)}
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-start hover:bg-ink/5 transition"
+            >
+              <span className={`text-xs transition-transform ${expanded ? 'rotate-90' : ''}`}>▶</span>
+              <span className="flex-1 font-semibold text-sm">{cat}</span>
+              {chosenCount > 0 && (
+                <span className="text-[11px] text-accent font-bold">{chosenCount} נבחרו</span>
+              )}
+              <span className="text-[11px] text-muted">{items.length}</span>
+            </button>
+            {expanded && (
+              <ul className="border-t border-line">
+                {items.map((idea) => {
+                  const active = chosen.includes(idea.id)
+                  const full = !active && chosen.length >= MAX_SLICES
+                  return (
+                    <li key={idea.id}>
+                      <button
+                        onClick={() => toggle(idea.id)}
+                        disabled={full}
+                        className={`w-full flex items-center gap-2 px-3 py-1.5 text-start transition disabled:opacity-40 ${
+                          active ? 'bg-accent-soft' : 'hover:bg-bg'
+                        }`}
+                      >
+                        <span className="text-base shrink-0" aria-hidden>
+                          {idea.emoji}
+                        </span>
+                        <span className="flex-1 min-w-0 truncate text-sm">
+                          {idea.title}
+                        </span>
+                        <span className="shrink-0 text-sm" aria-hidden>
+                          {active ? '✓' : ''}
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
