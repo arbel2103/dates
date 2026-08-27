@@ -88,10 +88,6 @@
   background: linear-gradient(180deg, #a81119 0%, #c0242b 38%, #d2565d 72%, #dd7a80 100%);
 }
 
-.skin-night {
-  background: linear-gradient(180deg, #332845 0%, #241b32 45%, #1b1427 100%);
-}
-
 /* ------------------------------------------------------------- ambience -- */
 
 .spark {

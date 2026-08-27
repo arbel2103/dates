@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import EnvelopeScene from './scenes/EnvelopeScene'
 import GalleryScene from './scenes/GalleryScene'
-import InviteScene from './scenes/InviteScene'
 import LetterScene from './scenes/LetterScene'
 import PuzzleScene from './scenes/PuzzleScene'
 import WheelScene from './scenes/WheelScene'
@@ -97,7 +96,5 @@ function SceneBody({ scene, onDone }: { scene: Scene; onDone: () => void }) {
       return <GalleryScene scene={scene} onDone={onDone} />
     case 'wheel':
       return <WheelScene scene={scene} />
-    case 'invite':
-      return <InviteScene scene={scene} />
   }
 }

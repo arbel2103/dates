@@ -80,40 +80,17 @@ export interface WheelScene {
   rigged?: string
 }
 
-export interface InviteDetail {
-  emoji: string
-  text: string
-}
-
-export interface InviteScene {
-  type: 'invite'
-  /** the lines that fade in one after another before the question */
-  lines: string[]
-  question: string
-  hint: string
-  yesLabel: string
-  noLabel: string
-  /** the celebration headline after 'yes' */
-  celebration: string
-  detailsTitle: string
-  details: InviteDetail[]
-  ctaLabel: string
-  /** where the closing button goes; usually a wa.me link */
-  ctaHref: string
-}
-
 export type Scene =
   | EnvelopeScene
   | LetterScene
   | PuzzleScene
   | GalleryScene
   | WheelScene
-  | InviteScene
 
 export type SceneType = Scene['type']
 
 /** Which background world a scene is rendered on. */
-export type Skin = 'paper' | 'red' | 'night'
+export type Skin = 'paper' | 'red'
 
 /** A gift is just an ordered list of scenes — a wheel site is one of length 1. */
 export interface Gift {

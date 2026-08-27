@@ -48,24 +48,6 @@ export function blankScene(type: SceneType, partner: string): Scene {
         resultLead: 'הדייט הבא שלנו הוא',
         resultNote: 'תהיי מוכנה מחר ב-19:00,\nאני דואג להכל 😉',
       }
-    case 'invite':
-      return {
-        type,
-        lines: ['מחר אנחנו שנה ביחד.', 'תודה להשם, את מאמינה?', 'כי אני לא…'],
-        question: 'תצאי איתי מחר?',
-        hint: '(רמז: את יכולה לנסות גם לא 😘)',
-        yesLabel: 'כן',
-        noLabel: 'לא',
-        celebration: 'תודה להשם!',
-        detailsTitle: 'אז ככה זה הולך להיראות:',
-        details: [
-          { emoji: '📅', text: 'מחר, בשקיעה' },
-          { emoji: '📍', text: 'הפתעה' },
-          { emoji: '🎁', text: 'את עצמך' },
-        ],
-        ctaLabel: '',
-        ctaHref: '',
-      }
   }
 }
 
@@ -75,7 +57,6 @@ export const SCENE_LABELS: Record<SceneType, string> = {
   puzzle: 'פאזל',
   gallery: 'תמונות',
   wheel: 'גלגל',
-  invite: 'הזמנה',
 }
 
 export const SCENE_EMOJI: Record<SceneType, string> = {
@@ -84,7 +65,6 @@ export const SCENE_EMOJI: Record<SceneType, string> = {
   puzzle: '🧩',
   gallery: '📷',
   wheel: '🎡',
-  invite: '🌙',
 }
 
 export const SCENE_ORDER: SceneType[] = [
@@ -93,7 +73,6 @@ export const SCENE_ORDER: SceneType[] = [
   'puzzle',
   'gallery',
   'wheel',
-  'invite',
 ]
 
 export const wheelOption = (label: string, emoji: string): WheelOption => ({

@@ -6,7 +6,6 @@ import { categoriesOf, useIdeas } from '../../store/useIdeas'
 import type {
   EnvelopeScene,
   GalleryScene,
-  InviteScene,
   LetterScene,
   PuzzleScene,
   Scene,
@@ -37,8 +36,6 @@ export default function SceneEditor({
       return <GalleryEditor scene={scene} onChange={onChange as EditorProps<GalleryScene>['onChange']} />
     case 'wheel':
       return <WheelEditor scene={scene} onChange={onChange as EditorProps<WheelScene>['onChange']} />
-    case 'invite':
-      return <InviteEditor scene={scene} onChange={onChange as EditorProps<InviteScene>['onChange']} />
   }
 }
 
@@ -297,92 +294,6 @@ function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
           ))}
         </select>
       </Field>
-    </div>
-  )
-}
-
-function InviteEditor({ scene, onChange }: EditorProps<InviteScene>) {
-  return (
-    <div className="grid gap-4">
-      <Field label="השורות שנכנסות אחת־אחת" hint="שורה אחת בכל שורה">
-        <Textarea
-          rows={4}
-          value={scene.lines.join('\n')}
-          onChange={(e) => onChange({ lines: e.target.value.split('\n') })}
-        />
-      </Field>
-      <Field label="השאלה">
-        <Input value={scene.question} onChange={(e) => onChange({ question: e.target.value })} />
-      </Field>
-      <Field label="הרמז מתחת לשאלה">
-        <Input value={scene.hint} onChange={(e) => onChange({ hint: e.target.value })} />
-      </Field>
-
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="כפתור ״כן״">
-          <Input value={scene.yesLabel} onChange={(e) => onChange({ yesLabel: e.target.value })} />
-        </Field>
-        <Field label="כפתור ״לא״" hint="בורח">
-          <Input value={scene.noLabel} onChange={(e) => onChange({ noLabel: e.target.value })} />
-        </Field>
-      </div>
-
-      <Field label="הכותרת אחרי ״כן״">
-        <Input
-          value={scene.celebration}
-          onChange={(e) => onChange({ celebration: e.target.value })}
-        />
-      </Field>
-      <Field label="כותרת כרטיס הפרטים">
-        <Input
-          value={scene.detailsTitle}
-          onChange={(e) => onChange({ detailsTitle: e.target.value })}
-        />
-      </Field>
-
-      <Field label="הפרטים">
-        <div className="grid gap-1.5">
-          {scene.details.map((detail, i) => (
-            <div key={i} className="flex gap-2">
-              <Input
-                className="w-16 text-center"
-                value={detail.emoji}
-                onChange={(e) =>
-                  onChange({
-                    details: scene.details.map((d, j) =>
-                      j === i ? { ...d, emoji: e.target.value } : d,
-                    ),
-                  })
-                }
-              />
-              <Input
-                value={detail.text}
-                onChange={(e) =>
-                  onChange({
-                    details: scene.details.map((d, j) =>
-                      j === i ? { ...d, text: e.target.value } : d,
-                    ),
-                  })
-                }
-              />
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => onChange({ details: scene.details.filter((_, j) => j !== i) })}
-              >
-                ✕
-              </Button>
-            </div>
-          ))}
-        </div>
-      </Field>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onChange({ details: [...scene.details, { emoji: '✨', text: '' }] })}
-      >
-        + שורה
-      </Button>
     </div>
   )
 }
