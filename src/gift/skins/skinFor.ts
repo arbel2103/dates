@@ -7,5 +7,4 @@ export const SKIN_FOR: Record<SceneType, Skin> = {
   puzzle: 'red',
   gallery: 'red',
   wheel: 'paper',
-  invite: 'night',
 }

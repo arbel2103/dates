@@ -204,7 +204,5 @@ function summarise(scene: Scene): string {
       return `${scene.photos.length} תמונות`
     case 'wheel':
       return `${scene.options.length} חלקים`
-    case 'invite':
-      return scene.question
   }
 }
