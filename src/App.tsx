@@ -21,6 +21,8 @@ export default function App() {
     <HashRouter>
       <Routes>
         <Route path="/v/:data" element={<InlineGiftPage />} />
+        <Route path="/g/:id/:key" element={<HostedGiftPage />} />
+        {/* the long form links published before the repo was dropped from the path */}
         <Route path="/g/:owner/:repo/:id/:key" element={<HostedGiftPage />} />
         <Route path="/preview" element={<PreviewPage />} />
         <Route

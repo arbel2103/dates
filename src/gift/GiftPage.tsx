@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import SceneStage from './SceneStage'
 import { decodeInline, openSealed, type GiftPayload } from '../lib/giftCodec'
 import { fetchGiftBlob } from '../lib/github/client'
+import { giftRepo } from '../lib/github/pat'
 import type { Scene } from '../lib/types'
 import './gift.css'
 
@@ -21,13 +22,17 @@ export function InlineGiftPage() {
  * A gift that was too big for a link. The ciphertext is fetched from the repo
  * and opened with the key from the fragment — which reached this browser and
  * no server along the way.
+ *
+ * The repo is only in the path for links published before it was dropped from
+ * it; without one, the gift lives where this build's gifts always live.
  */
 export function HostedGiftPage() {
   const { owner, repo, id, key } = useParams()
+  const from = owner && repo ? `${owner}/${repo}` : giftRepo()
   return (
     <Resolver
       load={async () => {
-        const blob = await fetchGiftBlob(`${owner}/${repo}`, `${id}.bin`)
+        const blob = await fetchGiftBlob(from, `${id}.bin`)
         return openSealed(blob, key ?? '')
       }}
     />

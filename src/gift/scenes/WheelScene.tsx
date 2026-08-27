@@ -1,6 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import HandDrawnEllipse from '../fx/HandDrawnEllipse'
-import RisingEmoji from '../fx/RisingEmoji'
+import DateReveal from './DateReveal'
 import { labelSize, pickWinner, planSpin, sliceColor, slicePath, wrapLabel } from '../../lib/wheel'
 import type { WheelScene as Scene } from '../../lib/types'
 
@@ -204,45 +203,11 @@ function Pointer({ spinning }: { spinning: boolean }) {
 function Result({ scene, winner }: { scene: Scene; winner: number }) {
   const option = scene.options[winner]
   return (
-    <div className="gift-stage">
-      <RisingEmoji />
-      <h1
-        className="gift-display gift-fade-in"
-        style={{ margin: 0, fontSize: 34, color: ROSE, fontWeight: 400 }}
-      >
-        🎉 מעולה!
-      </h1>
-      <p
-        className="gift-fade-in"
-        style={{ margin: '18px 0 34px', fontSize: 16, color: INK, animationDelay: '260ms' }}
-      >
-        {scene.resultLead}
-      </p>
-
-      <div style={{ position: 'relative', padding: '10px 30px' }}>
-        <HandDrawnEllipse />
-        <span
-          className="gift-hand"
-          style={{ position: 'relative', fontSize: 27, color: INK, whiteSpace: 'nowrap' }}
-        >
-          {option.emoji} {option.label}
-        </span>
-      </div>
-
-      {scene.resultNote && (
-        <p
-          className="gift-fade-in"
-          style={{
-            margin: '38px 0 0',
-            fontSize: 15,
-            color: INK,
-            whiteSpace: 'pre-line',
-            animationDelay: '1100ms',
-          }}
-        >
-          {scene.resultNote}
-        </p>
-      )}
-    </div>
+    <DateReveal
+      headline="🎉 מעולה!"
+      lead={scene.resultLead}
+      label={`${option.emoji} ${option.label}`}
+      note={scene.resultNote}
+    />
   )
 }

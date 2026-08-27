@@ -48,6 +48,14 @@ export function blankScene(type: SceneType, partner: string): Scene {
         resultLead: 'הדייט הבא שלנו הוא',
         resultNote: 'תהיי מוכנה מחר ב-19:00,\nאני דואג להכל 😉',
       }
+    case 'date':
+      return {
+        type,
+        headline: '🎉 מעולה!',
+        lead: 'הדייט הבא שלנו הוא',
+        label: '',
+        note: 'תהיי מוכנה מחר ב-19:00,\nאני דואג להכל 😉',
+      }
   }
 }
 
@@ -57,6 +65,7 @@ export const SCENE_LABELS: Record<SceneType, string> = {
   puzzle: 'פאזל',
   gallery: 'תמונות',
   wheel: 'גלגל',
+  date: 'דייט',
 }
 
 export const SCENE_EMOJI: Record<SceneType, string> = {
@@ -65,6 +74,7 @@ export const SCENE_EMOJI: Record<SceneType, string> = {
   puzzle: '🧩',
   gallery: '📷',
   wheel: '🎡',
+  date: '🎯',
 }
 
 export const SCENE_ORDER: SceneType[] = [
@@ -73,6 +83,7 @@ export const SCENE_ORDER: SceneType[] = [
   'puzzle',
   'gallery',
   'wheel',
+  'date',
 ]
 
 export const wheelOption = (label: string, emoji: string): WheelOption => ({

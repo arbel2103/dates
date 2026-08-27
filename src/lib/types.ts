@@ -80,12 +80,30 @@ export interface WheelScene {
   rigged?: string
 }
 
+/**
+ * The reveal on its own: the same card the wheel lands on, without the wheel.
+ * For when the date is already decided and the letter before it just has to
+ * open onto it.
+ */
+export interface DateScene {
+  type: 'date'
+  /** the headline over the reveal, e.g. '🎉 מעולה!' */
+  headline: string
+  /** the line above the circled date */
+  lead: string
+  /** the date itself — what gets circled by hand */
+  label: string
+  /** the closing line underneath; empty hides it */
+  note: string
+}
+
 export type Scene =
   | EnvelopeScene
   | LetterScene
   | PuzzleScene
   | GalleryScene
   | WheelScene
+  | DateScene
 
 export type SceneType = Scene['type']
 

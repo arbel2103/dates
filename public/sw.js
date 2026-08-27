@@ -1,7 +1,10 @@
 /* Offline support: network-first for pages (so updates arrive), cache-first for
    hashed assets, icons and fonts. Published gift blobs are never cached — a
    re-published gift must not come back stale. Bump the version to invalidate. */
-const CACHE = 'dates-v1'
+/* __BUILD__ — replaced at build time. Its only job is to make this file's bytes
+   differ between deploys, which is what makes the browser install a new worker
+   and hand the running app a fresh build. */
+const CACHE = 'dates-__BUILD__'
 const SHELL = '/dates/'
 
 self.addEventListener('install', (e) => {

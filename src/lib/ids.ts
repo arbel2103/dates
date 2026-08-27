@@ -1,7 +1,10 @@
-/** A short, unguessable id. 12 base32 chars ≈ 60 bits of entropy. */
+/**
+ * A short, unguessable id. 8 base32 chars ≈ 40 bits — plenty when the file it
+ * names is encrypted anyway, and four characters shorter in every link.
+ */
 const ALPHABET = 'abcdefghijkmnpqrstuvwxyz23456789'
 
-export function shortId(length = 12): string {
+export function shortId(length = 8): string {
   const bytes = new Uint8Array(length)
   crypto.getRandomValues(bytes)
   let out = ''
