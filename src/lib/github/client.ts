@@ -27,7 +27,13 @@ function headers(extra?: Record<string, string>): Record<string, string> {
   }
 }
 
-async function fail(res: Response): Promise<never> {
+/**
+ * Publishing is a chain of four calls, and GitHub's own messages ("Invalid tree
+ * info") say nothing about which link broke. The step is carried into the
+ * message so a failed publish can be diagnosed from what the studio shows,
+ * without a console.
+ */
+async function fail(res: Response, step?: string): Promise<never> {
   let detail = res.statusText
   try {
     const body = (await res.json()) as { message?: string }
@@ -35,16 +41,16 @@ async function fail(res: Response): Promise<never> {
   } catch {
     /* non-JSON error body */
   }
-  throw new GithubError(res.status, detail)
+  throw new GithubError(res.status, step ? `${detail} (${step})` : detail)
 }
 
-async function call<T>(path: string, init?: RequestInit): Promise<T> {
+async function call<T>(path: string, init?: RequestInit, step?: string): Promise<T> {
   const res = await fetch(`${API}${path}`, {
     ...init,
     headers: headers(init?.body ? { 'Content-Type': 'application/json' } : undefined),
     cache: 'no-store',
   })
-  if (!res.ok) await fail(res)
+  if (!res.ok) await fail(res, step)
   return (await res.json()) as T
 }
 
@@ -73,27 +79,42 @@ async function getRef(branch: string): Promise<string | null> {
   return ((await res.json()) as Ref).object.sha
 }
 
+/** What the gifts branch is seeded with, so its first tree is never empty. */
+const BRANCH_README =
+  'המתנות שפורסמו יושבות כאן, מוצפנות.\nהמפתח נשאר בקישור עצמו ולעולם לא מגיע לכאן.\n'
+
 /**
- * The gifts branch on first publish. It is created as an orphan — an empty
- * tree with no parent — so it never carries the app's own history and a
- * `git log` of the site stays readable.
+ * The gifts branch on first publish. It is created as an orphan — no parent —
+ * so it never carries the app's own history and a `git log` of the site stays
+ * readable.
+ *
+ * The first commit carries a README rather than nothing: the Git Data API
+ * rejects `tree: []` outright with "Invalid tree info", so an orphan branch has
+ * to be born holding at least one real file.
  */
 async function ensureGiftBranch(): Promise<string> {
   const existing = await getRef(GIFT_BRANCH)
   if (existing) return existing
 
-  const tree = await call<{ sha: string }>(`/repos/${getRepo()}/git/trees`, {
+  const repo = getRepo()
+  const readme = await call<{ sha: string }>(`/repos/${repo}/git/blobs`, {
     method: 'POST',
-    body: JSON.stringify({ tree: [] }),
-  })
-  const commit = await call<{ sha: string }>(`/repos/${getRepo()}/git/commits`, {
+    body: JSON.stringify({ content: BRANCH_README, encoding: 'utf-8' }),
+  }, 'יצירת קובץ פתיחה')
+  const tree = await call<{ sha: string }>(`/repos/${repo}/git/trees`, {
+    method: 'POST',
+    body: JSON.stringify({
+      tree: [{ path: 'README.md', mode: '100644', type: 'blob', sha: readme.sha }],
+    }),
+  }, 'יצירת עץ ראשון')
+  const commit = await call<{ sha: string }>(`/repos/${repo}/git/commits`, {
     method: 'POST',
     body: JSON.stringify({ message: 'התחלת מדף המתנות', tree: tree.sha, parents: [] }),
-  })
-  await call(`/repos/${getRepo()}/git/refs`, {
+  }, 'הקומיט הראשון')
+  await call(`/repos/${repo}/git/refs`, {
     method: 'POST',
     body: JSON.stringify({ ref: `refs/heads/${GIFT_BRANCH}`, sha: commit.sha }),
-  })
+  }, 'יצירת ענף המתנות')
   return commit.sha
 }
 
@@ -113,9 +134,15 @@ async function commitFile(
   const repo = getRepo()
   const tip = (await getRef(GIFT_BRANCH)) ?? parent
 
-  const base = await call<{ tree: { sha: string } }>(`/repos/${repo}/git/commits/${tip}`)
+  const base = await call<{ tree: { sha: string } }>(
+    `/repos/${repo}/git/commits/${tip}`,
+    undefined,
+    'קריאת הקומיט הקיים',
+  )
   const oldTree = await call<{ tree: TreeEntry[]; truncated?: boolean }>(
     `/repos/${repo}/git/trees/${base.tree.sha}`,
+    undefined,
+    'קריאת העץ הקיים',
   )
 
   const entries: TreeEntry[] = oldTree.tree
@@ -126,15 +153,15 @@ async function commitFile(
   const newTree = await call<{ sha: string }>(`/repos/${repo}/git/trees`, {
     method: 'POST',
     body: JSON.stringify({ tree: entries }),
-  })
+  }, 'בניית העץ החדש')
   const commit = await call<{ sha: string }>(`/repos/${repo}/git/commits`, {
     method: 'POST',
     body: JSON.stringify({ message, tree: newTree.sha, parents: [tip] }),
-  })
+  }, 'יצירת הקומיט')
   await call(`/repos/${repo}/git/refs/heads/${GIFT_BRANCH}`, {
     method: 'PATCH',
     body: JSON.stringify({ sha: commit.sha, force: true }),
-  })
+  }, 'עדכון הענף')
 }
 
 /** Upload one encrypted gift. Returns the path it landed on. */
@@ -143,7 +170,7 @@ export async function uploadGift(id: string, blob: Bytes): Promise<string> {
   const created = await call<{ sha: string }>(`/repos/${getRepo()}/git/blobs`, {
     method: 'POST',
     body: JSON.stringify({ content: toBase64(blob), encoding: 'base64' }),
-  })
+  }, 'העלאת המתנה')
   const path = `${id}.bin`
   await commitFile(parent, `מתנה ${id}`, path, created.sha)
   return path

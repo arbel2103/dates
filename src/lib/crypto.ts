@@ -1,14 +1,18 @@
 import { alloc, concatBytes, type Bytes } from './bytes'
 
 /**
- * AES-GCM 256. The key never leaves the browser: it is generated here, travels
- * in the link's fragment (which no server ever receives) and is used again in
- * the recipient's browser. GitHub therefore stores bytes it cannot read.
+ * AES-GCM. The key never leaves the browser: it is generated here, travels in
+ * the link's fragment (which no server ever receives) and is used again in the
+ * recipient's browser. GitHub therefore stores bytes it cannot read.
+ *
+ * 128-bit, because the key is half the length of the link and 128-bit AES has
+ * no practical attack against it. Decryption reads the length from the key it
+ * is handed, so links published back when this was 256-bit still open.
  */
 const IV_BYTES = 12
 
 export async function generateKey(): Promise<CryptoKey> {
-  return crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, [
+  return crypto.subtle.generateKey({ name: 'AES-GCM', length: 128 }, true, [
     'encrypt',
     'decrypt',
   ])

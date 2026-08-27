@@ -204,5 +204,7 @@ function summarise(scene: Scene): string {
       return `${scene.photos.length} תמונות`
     case 'wheel':
       return `${scene.options.length} חלקים`
+    case 'date':
+      return scene.label || 'עוד לא נבחר דייט'
   }
 }

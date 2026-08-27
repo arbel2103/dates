@@ -4,8 +4,10 @@ import { wheelOption } from '../sceneDefaults'
 import { dataUrlBytes, shrinkImage, squareImage } from '../../lib/images'
 import { categoriesOf, useIdeas } from '../../store/useIdeas'
 import type {
+  DateScene,
   EnvelopeScene,
   GalleryScene,
+  Idea,
   LetterScene,
   PuzzleScene,
   Scene,
@@ -36,6 +38,8 @@ export default function SceneEditor({
       return <GalleryEditor scene={scene} onChange={onChange as EditorProps<GalleryScene>['onChange']} />
     case 'wheel':
       return <WheelEditor scene={scene} onChange={onChange as EditorProps<WheelScene>['onChange']} />
+    case 'date':
+      return <DateEditor scene={scene} onChange={onChange as EditorProps<DateScene>['onChange']} />
   }
 }
 
@@ -181,14 +185,52 @@ function GalleryEditor({ scene, onChange }: EditorProps<GalleryScene>) {
   )
 }
 
-function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
+/**
+ * The library, folded into categories. Shared by every editor that needs to
+ * reach into it, so an idea is picked the same way wherever it is picked.
+ */
+function IdeaPicker({ onPick }: { onPick: (idea: Idea) => void }) {
   const ideas = useIdeas((s) => s.ideas)
   const categories = useMemo(() => categoriesOf(ideas), [ideas])
-  const [picking, setPicking] = useState(false)
   const [openCats, setOpenCats] = useState<Record<string, boolean>>({})
   const flipCat = (cat: string) => setOpenCats((o) => ({ ...o, [cat]: !o[cat] }))
 
-  const addIdea = (idea: { id: string; title: string; emoji: string }) =>
+  return (
+    <div className="max-h-64 overflow-y-auto grid gap-1 border border-line rounded-xl p-2">
+      {categories.map((cat) => {
+        const items = ideas.filter((i) => i.category === cat)
+        const expanded = openCats[cat] ?? false
+        return (
+          <div key={cat}>
+            <button
+              onClick={() => flipCat(cat)}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-start hover:bg-ink/5 rounded-lg transition"
+            >
+              <span className={`text-xs transition-transform ${expanded ? 'rotate-90' : ''}`}>▶</span>
+              <span className="flex-1 font-semibold text-sm">{cat}</span>
+              <span className="text-[11px] text-muted">{items.length}</span>
+            </button>
+            {expanded &&
+              items.map((idea) => (
+                <button
+                  key={idea.id}
+                  className="w-full text-start text-sm px-6 py-1.5 rounded-lg hover:bg-bg"
+                  onClick={() => onPick(idea)}
+                >
+                  {idea.title}
+                </button>
+              ))}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
+  const [picking, setPicking] = useState(false)
+
+  const addIdea = (idea: Idea) =>
     onChange({ options: [...scene.options, { id: idea.id, label: idea.title, emoji: idea.emoji }] })
 
   return (
@@ -239,35 +281,7 @@ function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
         </Button>
       </div>
 
-      {picking && (
-        <div className="max-h-64 overflow-y-auto grid gap-1 border border-line rounded-xl p-2">
-          {categories.map((cat) => {
-            const items = ideas.filter((i) => i.category === cat)
-            const expanded = openCats[cat] ?? false
-            return (
-              <div key={cat}>
-                <button
-                  onClick={() => flipCat(cat)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 text-start hover:bg-ink/5 rounded-lg transition"
-                >
-                  <span className={`text-xs transition-transform ${expanded ? 'rotate-90' : ''}`}>▶</span>
-                  <span className="flex-1 font-semibold text-sm">{cat}</span>
-                  <span className="text-[11px] text-muted">{items.length}</span>
-                </button>
-                {expanded && items.map((idea) => (
-                  <button
-                    key={idea.id}
-                    className="w-full text-start text-sm px-6 py-1.5 rounded-lg hover:bg-bg"
-                    onClick={() => addIdea(idea)}
-                  >
-                    {idea.title}
-                  </button>
-                ))}
-              </div>
-            )
-          })}
-        </div>
-      )}
+      {picking && <IdeaPicker onPick={addIdea} />}
 
       <Field label="השורה שמעל התוצאה">
         <Input value={scene.resultLead} onChange={(e) => onChange({ resultLead: e.target.value })} />
@@ -293,6 +307,49 @@ function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
             </option>
           ))}
         </select>
+      </Field>
+    </div>
+  )
+}
+
+/**
+ * The reveal without the wheel. Same card, but the date is chosen here rather
+ * than drawn — for a letter that opens straight onto the plan.
+ */
+function DateEditor({ scene, onChange }: EditorProps<DateScene>) {
+  const [picking, setPicking] = useState(false)
+
+  return (
+    <div className="grid gap-4">
+      <Field label="הכותרת" hint="השאר ריק כדי להסתיר">
+        <Input value={scene.headline} onChange={(e) => onChange({ headline: e.target.value })} />
+      </Field>
+      <Field label="השורה שמעל הדייט">
+        <Input value={scene.lead} onChange={(e) => onChange({ lead: e.target.value })} />
+      </Field>
+
+      <Field label="הדייט" hint="זה מה שיעוגל בכתב יד">
+        <Input
+          value={scene.label}
+          placeholder="דייט ים בשקיעה"
+          onChange={(e) => onChange({ label: e.target.value })}
+        />
+      </Field>
+
+      <Button variant="outline" size="sm" onClick={() => setPicking((p) => !p)}>
+        {picking ? 'סגור' : 'בחר מהרעיונות'}
+      </Button>
+      {picking && (
+        <IdeaPicker
+          onPick={(idea) => {
+            onChange({ label: idea.title })
+            setPicking(false)
+          }}
+        />
+      )}
+
+      <Field label="שורת סיום" hint="השאר ריק כדי להסתיר">
+        <Textarea rows={2} value={scene.note} onChange={(e) => onChange({ note: e.target.value })} />
       </Field>
     </div>
   )

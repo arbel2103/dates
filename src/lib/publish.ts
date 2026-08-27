@@ -6,7 +6,7 @@ import {
   toPayload,
 } from './giftCodec'
 import { uploadGift, deleteGift } from './github/client'
-import { getRepo, hasPat } from './github/pat'
+import { getRepo, giftRepo, hasPat } from './github/pat'
 import type { Gift, PublishedGift } from './types'
 
 /**
@@ -62,10 +62,15 @@ export async function publishGift(gift: Gift): Promise<PublishedGift> {
   const { blob, key } = await sealPayload(payload)
   const path = await uploadGift(id, blob)
 
+  // the repo is left out when the gift sits where the site is served from,
+  // which is the normal case and the shortest the link can be; naming it is
+  // only needed when the two have been pointed apart in settings
+  const where = getRepo() === giftRepo() ? '' : `${getRepo()}/`
+
   return {
     id: gift.id,
     title: gift.title,
-    url: `${base}#/g/${getRepo()}/${id}/${key}`,
+    url: `${base}#/g/${where}${id}/${key}`,
     mode: 'hosted',
     publishedAt: new Date().toISOString(),
     path,
