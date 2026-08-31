@@ -254,7 +254,7 @@ export default function PuzzleScene({
             style={{ marginTop: 16, position: 'relative', zIndex: 40, animationDelay: '760ms' }}
             onClick={onDone}
           >
-            {scene.doneCta}
+            {scene.doneCta || 'המשך'}
           </button>
         </>
       )}

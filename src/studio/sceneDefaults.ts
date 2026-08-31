@@ -2,60 +2,40 @@ import { uid } from '../lib/ids'
 import type { Scene, SceneType, WheelOption } from '../lib/types'
 
 /**
- * What a freshly added scene says.
+ * What a freshly added scene starts as: nothing written.
  *
- * These are real sentences rather than placeholders: most of a gift never gets
- * edited, and a default that already reads well is the difference between
- * sending something tonight and abandoning a half-filled form.
+ * Every word in a gift is meant to be its author's, so a new scene arrives
+ * empty and waits to be filled rather than arriving with sentences to delete
+ * first. Only the numbers that have to mean something — the typing speed, the
+ * puzzle grid — come with a working value.
+ *
+ * The scenes fall back to a readable label for their continue button when one
+ * is left blank, so an empty scene is still a scene that can be walked through.
  */
-export function blankScene(type: SceneType, partner: string): Scene {
-  const you = partner.trim()
+export function blankScene(type: SceneType): Scene {
   switch (type) {
     case 'envelope':
-      return {
-        type,
-        note: you ? `ל${you}` : 'בשבילך',
-        emoji: '💌',
-        hint: 'מישהו השאיר לך פתק. פתחי אותו…',
-      }
+      return { type, note: '', emoji: '', hint: '' }
     case 'letter':
-      return {
-        type,
-        text: 'שלום אהבת חיי,\nהכנתי לך משהו נחמד.\nאבל קודם — תסתדרי פה קצת…',
-        speed: 38,
-        cta: 'המשך',
-      }
+      return { type, text: '', speed: 38, cta: '' }
     case 'puzzle':
       return {
         type,
-        title: 'תרכיבי אותנו מחדש',
-        hint: 'גררי כל חלק למקום שלו',
+        title: '',
+        hint: '',
         image: '',
-        caption: you ? `אני ו${you}` : 'שנינו',
+        caption: '',
         rows: 3,
         cols: 3,
-        doneText: 'אין עלייך',
-        doneCta: 'גאה בך',
+        doneText: '',
+        doneCta: '',
       }
     case 'gallery':
-      return { type, photos: [], hint: 'לחצי על התמונה כדי להמשיך' }
+      return { type, photos: [], hint: '' }
     case 'wheel':
-      return {
-        type,
-        title: 'גלגל הדייטים שלנו',
-        subtitle: 'סובבי את הגלגל עם האצבע 👆',
-        options: [],
-        resultLead: 'הדייט הבא שלנו הוא',
-        resultNote: 'תהיי מוכנה מחר ב-19:00,\nאני דואג להכל 😉',
-      }
+      return { type, title: '', subtitle: '', options: [], resultLead: '', resultNote: '' }
     case 'date':
-      return {
-        type,
-        headline: '🎉 מעולה!',
-        lead: 'הדייט הבא שלנו הוא',
-        label: '',
-        note: 'תהיי מוכנה מחר ב-19:00,\nאני דואג להכל 😉',
-      }
+      return { type, headline: '', lead: '', label: '', note: '' }
   }
 }
 

@@ -53,9 +53,11 @@ export default function LetterScene({
         </p>
       </div>
 
+      {/* a scene left blank still has to be walkable, so the button keeps a
+          readable label of its own when none was written */}
       {done && (
         <button className="gift-pill pop-in" style={{ marginTop: 26 }} onClick={onDone}>
-          {scene.cta} ←
+          {scene.cta || 'המשך'} ←
         </button>
       )}
     </div>
