@@ -26,7 +26,7 @@ export default function WheelPage() {
 
   const [chosen, setChosen] = useState<string[]>([])
   const [copy, setCopy] = useState(() => {
-    const base = blankScene('wheel', partner) as WheelScene
+    const base = blankScene('wheel') as WheelScene
     return { title: base.title, subtitle: base.subtitle, resultLead: base.resultLead, resultNote: base.resultNote }
   })
   const [publishId, setPublishId] = useState<string | null>(null)
@@ -46,7 +46,7 @@ export default function WheelPage() {
     )
 
   const scene = (): WheelScene => ({
-    ...(blankScene('wheel', partner) as WheelScene),
+    ...(blankScene('wheel') as WheelScene),
     ...copy,
     options: selected.map((i) => ({ id: i.id, label: i.title, emoji: i.emoji })),
   })

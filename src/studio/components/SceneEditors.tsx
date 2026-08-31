@@ -47,13 +47,25 @@ function EnvelopeEditor({ scene, onChange }: EditorProps<EnvelopeScene>) {
   return (
     <div className="grid gap-4">
       <Field label="מה כתוב על הפתק">
-        <Input value={scene.note} onChange={(e) => onChange({ note: e.target.value })} />
+        <Input
+          value={scene.note}
+          placeholder="בשבילך"
+          onChange={(e) => onChange({ note: e.target.value })}
+        />
       </Field>
       <Field label="אימוג׳י">
-        <Input value={scene.emoji} onChange={(e) => onChange({ emoji: e.target.value })} />
+        <Input
+          value={scene.emoji}
+          placeholder="💌"
+          onChange={(e) => onChange({ emoji: e.target.value })}
+        />
       </Field>
       <Field label="השורה מתחת">
-        <Input value={scene.hint} onChange={(e) => onChange({ hint: e.target.value })} />
+        <Input
+          value={scene.hint}
+          placeholder="מישהו השאיר לך פתק. פתחי אותו…"
+          onChange={(e) => onChange({ hint: e.target.value })}
+        />
       </Field>
     </div>
   )
@@ -64,7 +76,12 @@ function LetterEditor({ scene, onChange }: EditorProps<LetterScene>) {
   return (
     <div className="grid gap-4">
       <Field label="המכתב" hint={`ייכתב מול העיניים שלה בערך ${seconds} שניות`}>
-        <Textarea rows={8} value={scene.text} onChange={(e) => onChange({ text: e.target.value })} />
+        <Textarea
+          rows={8}
+          value={scene.text}
+          placeholder="שלום אהבת חיי,&#10;הכנתי לך משהו נחמד…"
+          onChange={(e) => onChange({ text: e.target.value })}
+        />
       </Field>
       <Field label="קצב הכתיבה" hint={`${scene.speed} מילישניות לאות — נמוך יותר, מהיר יותר`}>
         <input
@@ -76,8 +93,12 @@ function LetterEditor({ scene, onChange }: EditorProps<LetterScene>) {
           className="w-full accent-accent"
         />
       </Field>
-      <Field label="כפתור ההמשך">
-        <Input value={scene.cta} onChange={(e) => onChange({ cta: e.target.value })} />
+      <Field label="כפתור ההמשך" hint="ריק ייקרא ״המשך״">
+        <Input
+          value={scene.cta}
+          placeholder="המשך"
+          onChange={(e) => onChange({ cta: e.target.value })}
+        />
       </Field>
     </div>
   )
@@ -87,10 +108,18 @@ function PuzzleEditor({ scene, onChange }: EditorProps<PuzzleScene>) {
   return (
     <div className="grid gap-4">
       <Field label="כותרת">
-        <Input value={scene.title} onChange={(e) => onChange({ title: e.target.value })} />
+        <Input
+          value={scene.title}
+          placeholder="תרכיבי אותנו מחדש"
+          onChange={(e) => onChange({ title: e.target.value })}
+        />
       </Field>
       <Field label="ההוראה">
-        <Input value={scene.hint} onChange={(e) => onChange({ hint: e.target.value })} />
+        <Input
+          value={scene.hint}
+          placeholder="גררי כל חלק למקום שלו"
+          onChange={(e) => onChange({ hint: e.target.value })}
+        />
       </Field>
 
       <PhotoField
@@ -126,13 +155,25 @@ function PuzzleEditor({ scene, onChange }: EditorProps<PuzzleScene>) {
       </p>
 
       <Field label="הכיתוב על הפולרויד">
-        <Input value={scene.caption} onChange={(e) => onChange({ caption: e.target.value })} />
+        <Input
+          value={scene.caption}
+          placeholder="שנינו"
+          onChange={(e) => onChange({ caption: e.target.value })}
+        />
       </Field>
       <Field label="מה כתוב כשהיא מסיימת">
-        <Input value={scene.doneText} onChange={(e) => onChange({ doneText: e.target.value })} />
+        <Input
+          value={scene.doneText}
+          placeholder="אין עלייך"
+          onChange={(e) => onChange({ doneText: e.target.value })}
+        />
       </Field>
-      <Field label="כפתור ההמשך">
-        <Input value={scene.doneCta} onChange={(e) => onChange({ doneCta: e.target.value })} />
+      <Field label="כפתור ההמשך" hint="ריק ייקרא ״המשך״">
+        <Input
+          value={scene.doneCta}
+          placeholder="המשך"
+          onChange={(e) => onChange({ doneCta: e.target.value })}
+        />
       </Field>
     </div>
   )
@@ -147,7 +188,11 @@ function GalleryEditor({ scene, onChange }: EditorProps<GalleryScene>) {
   return (
     <div className="grid gap-4">
       <Field label="ההוראה">
-        <Input value={scene.hint} onChange={(e) => onChange({ hint: e.target.value })} />
+        <Input
+          value={scene.hint}
+          placeholder="לחצי על התמונה כדי להמשיך"
+          onChange={(e) => onChange({ hint: e.target.value })}
+        />
       </Field>
 
       {scene.photos.map((photo, i) => (
@@ -236,10 +281,18 @@ function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
   return (
     <div className="grid gap-4">
       <Field label="כותרת">
-        <Input value={scene.title} onChange={(e) => onChange({ title: e.target.value })} />
+        <Input
+          value={scene.title}
+          placeholder="גלגל הדייטים שלנו"
+          onChange={(e) => onChange({ title: e.target.value })}
+        />
       </Field>
       <Field label="תת־כותרת">
-        <Input value={scene.subtitle} onChange={(e) => onChange({ subtitle: e.target.value })} />
+        <Input
+          value={scene.subtitle}
+          placeholder="סובבי את הגלגל עם האצבע 👆"
+          onChange={(e) => onChange({ subtitle: e.target.value })}
+        />
       </Field>
 
       <Field label={`חלקי הגלגל (${scene.options.length})`}>
@@ -284,12 +337,17 @@ function WheelEditor({ scene, onChange }: EditorProps<WheelScene>) {
       {picking && <IdeaPicker onPick={addIdea} />}
 
       <Field label="השורה שמעל התוצאה">
-        <Input value={scene.resultLead} onChange={(e) => onChange({ resultLead: e.target.value })} />
+        <Input
+          value={scene.resultLead}
+          placeholder="הדייט הבא שלנו הוא"
+          onChange={(e) => onChange({ resultLead: e.target.value })}
+        />
       </Field>
       <Field label="שורת סיום">
         <Textarea
           rows={2}
           value={scene.resultNote}
+          placeholder="תהיי מוכנה מחר ב-19:00"
           onChange={(e) => onChange({ resultNote: e.target.value })}
         />
       </Field>
@@ -322,10 +380,18 @@ function DateEditor({ scene, onChange }: EditorProps<DateScene>) {
   return (
     <div className="grid gap-4">
       <Field label="הכותרת" hint="השאר ריק כדי להסתיר">
-        <Input value={scene.headline} onChange={(e) => onChange({ headline: e.target.value })} />
+        <Input
+          value={scene.headline}
+          placeholder="🎉 מעולה!"
+          onChange={(e) => onChange({ headline: e.target.value })}
+        />
       </Field>
       <Field label="השורה שמעל הדייט">
-        <Input value={scene.lead} onChange={(e) => onChange({ lead: e.target.value })} />
+        <Input
+          value={scene.lead}
+          placeholder="הדייט הבא שלנו הוא"
+          onChange={(e) => onChange({ lead: e.target.value })}
+        />
       </Field>
 
       <Field label="הדייט" hint="זה מה שיעוגל בכתב יד">
@@ -349,7 +415,12 @@ function DateEditor({ scene, onChange }: EditorProps<DateScene>) {
       )}
 
       <Field label="שורת סיום" hint="השאר ריק כדי להסתיר">
-        <Textarea rows={2} value={scene.note} onChange={(e) => onChange({ note: e.target.value })} />
+        <Textarea
+          rows={2}
+          value={scene.note}
+          placeholder="תהיי מוכנה מחר ב-19:00"
+          onChange={(e) => onChange({ note: e.target.value })}
+        />
       </Field>
     </div>
   )

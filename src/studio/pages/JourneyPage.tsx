@@ -34,7 +34,7 @@ export default function JourneyPage() {
   if (!gift) {
     return (
       <div>
-        <PageHeader title="מסע" subtitle="מעטפה, מכתב, פאזל, תמונות, הזמנה — ברצף אחד." />
+        <PageHeader title="מסע" subtitle="מעטפה, מכתב, פאזל, תמונות, גלגל, דייט — ברצף אחד." />
         {gifts.length > 0 && (
           <ul className="grid gap-2 mb-4">
             {gifts.map((g) => (
@@ -154,7 +154,7 @@ export default function JourneyPage() {
               key={type}
               className="flex flex-col items-center gap-1 p-4 rounded-2xl border border-line hover:bg-bg transition"
               onClick={() => {
-                addScene(gift.id, blankScene(type, partner))
+                addScene(gift.id, blankScene(type))
                 setAdding(false)
                 setOpenScene(gift.scenes.length)
               }}
@@ -191,19 +191,22 @@ export default function JourneyPage() {
   )
 }
 
-/** One line describing a scene, so the list is readable without opening each. */
+/**
+ * One line describing a scene, so the list is readable without opening each.
+ * Scenes now start empty, so each says so plainly rather than showing a blank.
+ */
 function summarise(scene: Scene): string {
   switch (scene.type) {
     case 'envelope':
-      return scene.note
+      return scene.note || 'עוד לא נכתב'
     case 'letter':
-      return scene.text.split('\n')[0]
+      return scene.text.split('\n')[0] || 'עוד לא נכתב'
     case 'puzzle':
       return `${scene.rows}×${scene.cols}${scene.image ? '' : ' — עוד אין תמונה'}`
     case 'gallery':
-      return `${scene.photos.length} תמונות`
+      return scene.photos.length ? `${scene.photos.length} תמונות` : 'עוד אין תמונות'
     case 'wheel':
-      return `${scene.options.length} חלקים`
+      return scene.options.length ? `${scene.options.length} חלקים` : 'עוד אין חלקים'
     case 'date':
       return scene.label || 'עוד לא נבחר דייט'
   }
